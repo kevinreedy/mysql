@@ -40,12 +40,15 @@ before_script:
   - /opt/chefdk/embedded/bin/chef gem install kitchen-dokken
 
 script:
+  - git fetch origin master:master
+  - git checkout $TRAVIS_BRANCH
   - /opt/chefdk/embedded/bin/chef --version
   - /opt/chefdk/embedded/bin/rubocop --version
-  - /opt/chefdk/embedded/bin/rubocop
   - /opt/chefdk/embedded/bin/foodcritic --version
-  - /opt/chefdk/embedded/bin/foodcritic . --exclude spec -f any
-  - /opt/chefdk/embedded/bin/rspec
+  - /opt/chefdk/bin/delivery --version
+  - /opt/chefdk/bin/delivery job verify lint --local
+  - /opt/chefdk/bin/delivery job verify syntax --local
+  - /opt/chefdk/bin/delivery job verify unit --local
   - KITCHEN_LOCAL_YAML=.kitchen.dokken.yml kitchen verify ${INSTANCE}
 
 after_script:
